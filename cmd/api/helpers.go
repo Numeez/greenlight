@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
+	"github.com/Numeez/greenlight/internal/validator"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -84,5 +86,35 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 	w.Write([]byte(js))
 
 	return nil
+
+}
+
+func (app *application) readString(qs url.Values, key string, defaultValue string) string {
+	value := qs.Get(key)
+	if value == "" {
+		value = defaultValue
+	}
+	return value
+
+}
+func (app *application) readCSV(qs url.Values, key string, defaultValue []string) []string {
+	value := qs.Get(key)
+	if value == "" {
+		return defaultValue
+	}
+	return strings.Split(value, ",")
+
+}
+
+func (app *application) readInt(v *validator.Validator, qs url.Values, key string, defaultValue int) int {
+	value := qs.Get(key)
+	if value == "" {
+		return defaultValue
+	}
+	val, err := strconv.Atoi(value)
+	if err != nil {
+		v.AddError(key, "must be an integer value")
+	}
+	return val
 
 }

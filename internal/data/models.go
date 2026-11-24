@@ -18,7 +18,7 @@ type Movies interface {
 }
 
 type Model struct {
-	Movies Movies
+	Movies MovieModel
 }
 
 func NewModels(db *sql.DB) Model {
